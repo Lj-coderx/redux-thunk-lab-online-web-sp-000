@@ -1,38 +1,39 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import { fetchCats } from './actions/catActions'
+import {Navbar} from 'react-bootstrap'
 import CatList from './CatList'
+import {connect} from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as actions from './actions/catActions.js'
 
-class App extends Component {
-  componentDidMount() {
-    console.log(this.props)
-    this.props.fetchCats()
+export class App extends Component {
+
+componentDidMount() {
+    if (this.props.catPics.length === 0)
+      this.props.actions.fetchCats();
   }
 
   render() {
-    console.log(this.props)
-    console.log(this.props.catPics) // log will fire every time App renders
     return (
       <div className="App">
-        <h1>CatBook</h1>
-        {/* missing component */}
-        {this.props.loading ? <h2>Loading...</h2> : <CatList catPics={this.props.catPics} />}
+        <Navbar>
+          <Navbar.Header>
+            <Navbar.Brand>
+              <a href="#">CatBook</a>
+            </Navbar.Brand>
+          </Navbar.Header>
+        </Navbar>
+        <CatList catPics={this.props.catPics} />
       </div>
     );
   }
 }
 
-//passing in the state from the Redux store
-const mapStateToProps = state => {
-  return {
-    catPics: state.cats,
-    loading: state.loading
-  }
+function mapStateToProps(state){
+  return {catPics: state.cats.pictures}
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchCats: () => dispatch(fetchCats())
-  }
+function mapDispatchToProps(dispatch) {
+  return {actions: bindActionCreators(actions, dispatch)}
 }
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+
+export const WrapperApp = connect(mapStateToProps, mapDispatchToProps)(App)
